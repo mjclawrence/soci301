@@ -173,6 +173,13 @@ gss <- gss %>%
                               ifelse(hispanic == 1, "No", "Yes")))
 ```
 
+```{r}
+gss <- gss %>%
+  mutate(racehisp = ifelse(anyhispanic == "Yes", "Hispanic", race),
+         racehisp = factor(racehisp,
+                           labels = c("White", "Black", "Other", "Hispanic")))
+```
+
 
 ```{r}
 gss <- gss %>%
