@@ -1,0 +1,308 @@
+---
+title: "Analyzing GSS Data"
+author: "Matt Lawrence"
+date: "April 29, 2020"
+output: pdf_document
+keep_tex: true
+---
+
+## Welcome to R Studio!
+
+Some navigation before we begin:
+
+- The upper left pane is the *text editor* where you keep all of your commands.
+- The lower left pane is the *console* where the commands will be executed.
+- The upper right pane's `Environment` window will show the data that you load.
+- The lower right pane will show previews of your R Markdown documents, plots, help documents, packages, and other features.
+
+This file is an R Notebook which is an R Markdown file that allows you to integrate text, R code, and R output into a single document. For our purposes - and for producing transparent and reproducible research - the advantage of an R Notebook is that you can easily include text, notes, and comments that are not code (like this paragraph).
+
+How does R know what is code and what is regular text? In an R Notebook, code goes in a fenced code block. To open the fence, type three backticks and an r in curly brackets on a single line; to close the fence, type three backticks on a single line like this:
+
+```{r}
+
+```
+
+Everything between those fences will be run as code (unless it is preceded by a hashtag) when you press the green arrow in the code block.
+
+We start by loading the data and packages. Note that you may need to install the packages.
+```{r, error = FALSE, warning = FALSE, message = FALSE}
+
+library(tidyverse) 
+# This loads the tidyverse package
+
+gss <- read.csv("https://raw.githubusercontent.com/lawrence-midd/soan301/master/gss_analysis.csv") 
+# This loads the data and saves it as a data frame called `gss`
+```
+
+For an overview of the types of variables we have in our dataset, look to the top right pane and click the blue button with the white arrow next to the data frame name. There are two types of variables in our dataset. The `Int` variables are *integer* variables which means they are numeric. The `Factor` variables are categorical variables; their *levels* are the categories.
+
+## Variables
+
+What are the variables in this GSS subset (pulled from the 2000-2018 survey years)? Here are the variable names and labels. For further details about the wording of the questions, visit http://gssdataexplorer.norc.org
+
+`age` - Age of respondent
+
+`books16` -  Books in home of r age 16
+
+`born` - Was r born in this country
+
+`chldidel` - Ideal number of children
+
+`citizen` - Are you a citizen of America
+
+`conpress` - Confidence in press
+
+`cooking1` - Who in household prepares the meals
+
+`courts` - Courts dealing with criminals
+
+`degree` - Rs highest degree
+
+`hispanic` - Hispanic specified
+
+`humor30` -  R use humor site in past 30 days
+
+`instagrm` - Are you a member of or regularly use Instagram
+
+`maeduc` - Highest year school completed, mother
+
+`major1` - College major 1
+
+`natenvir` - Improving & protecting environment
+
+`paeduc` - Highest year school completed, father
+
+`premars1` - Is premarital sex wrong?
+
+`racdif1` -  Differences due to discrimination
+
+`racdif3` -  Differences due to lack of education
+
+`race` - Race of respondent
+
+`region` - Region of interview
+
+`relig16` -  Religion in which raised
+
+`sex` -  Respondent's sex
+
+`spnatdis` - Should govt spend more or less on natural disasters 
+
+`year` -     Gss year for this respondent
+
+
+## Distributions of Single Variables
+
+Let's look at the distribution of the `age` variable. We can do this with the `summary()` function. Note that in the chunk below, we state the function to use and then in parentheses state the data frame name followed by a dollar sign and the variable name. This is the standard syntax for most R commands.
+
+```{r}
+summary(gss$age)
+```
+
+Characteristics you might reference to describe variables include the range (the minimum and maximum), the median (the middle point in the distribution), and the mean (the average). How would you describe this distribution? 
+
+Notice that this summary distribution includes 93 observations with NA values. That tells us that 93 observations are missing data for the age variable. For some functions, we will have to manually remove the NAs from our analyses for them to run properly. For example, if we want to find the mean age, we add the `na.rm = TRUE` option to remove the NAs.
+
+```{r}
+mean(gss$age, na.rm=TRUE)
+```
+
+
+
+## Creating Categories
+
+The values of the age variable are single years of age (18, 19, 20, etc.) But it might make sense to create categories for this variable. There are several ways to do this in R, some more efficient than what we will do below. But this is the most straightforward way to be able to easily amend the code for your own purposes in the future. In this chunk, we are creating a new variable in the `gss` data frame called `age_category` which divides the exisitng values of the `age` variable into the categories we previously saw the GSS use for their key trends analyses. We put the conditions for each category in brackets (this is called *indexing*). To the right of the arrow, we give the name we want to use for the new category level.
+
+```{r}
+gss$age_category[gss$age<35] <- "18-34" # use < for "less than"
+gss$age_category[gss$age>=35 & gss$age<50] <- "35-49" # use >= for "greater than or equal to"
+gss$age_category[gss$age>=50 & gss$age<65] <- "50-64"
+gss$age_category[gss$age>=65] <- "65+"
+gss$age_category[gss$age=="NA"] <- "NA" # use "==" for equal to
+```
+
+A categorical variable does not have the same kind of distribution as a numerical variable. Specifically, it does not have a mean or a median in the same way, so we would not use summary() with a categorical variable. Instead, let's look at a table to see the number of observations in each age category:
+
+```{r}
+table(gss$age_category)
+```
+
+What if we wanted proportions rather than frequencies? Wrap the table() in prop.table():
+
+```{r}
+round(prop.table(table(gss$age_category)),3)
+```
+
+Try making a proportion table for the `courts` variable, which includes responses to the question: "In general, do you think the courts in this area deal too harshly or not harshly enough with criminals?"
+
+### REPLACE THIS LINE WITH YOUR CODE
+
+```{r}
+prop.table(table(gss$courts))
+```
+
+Is this the order you want for the categories? It is generally good practice to order levels from the lowest to highest values. To change the order of a factor variable, use the `levels` option.
+
+```{r}
+gss <- gss %>%
+     mutate(courts = factor(courts,
+                            levels = c("Not harsh enough",
+                                       "About right",
+                                       "Too harsh")))
+```
+
+Try the proportion table again.
+
+### REPLACE THIS LINE WITH YOUR CODE
+
+```{r}
+prop.table(table(gss$courts))
+```
+
+How would you re-order the `degree` variable?
+
+### REPLACE THIS LINE WITH YOUR CODE
+```{r}
+# Start with a table to see the levels
+table(gss$degree)
+
+# Then re-order the levels
+gss <- gss %>%
+     mutate(degree = factor(degree,
+                            levels = c("Lt high school",
+                                       "High school",
+                                       "Junior college",
+                                       "Bachelor",
+                                       "Graduate")))
+```
+
+What proportion of respondents are in each degree category?
+
+### REPLACE THIS LINE WITH YOUR CODE
+```{r}
+prop.table(table(gss$degree))
+```
+
+### Cross Tabulations
+
+It is often helpful to know how one variable's distribution varies according to another variable (or variables). For example, we may want to see the proportion of respondents in each `degree` category who are in each `courts` category. To do that, use the same code as above but include both variables (separated by a comma). The first variable should be the *row* variable and the second variable should be the *column* variable. It is standard to use the rows for your independent variable (or X) and the columns for your dependent variable (or Y).
+
+```{r}
+round(prop.table(table(gss$degree, gss$courts), 1),3)
+```
+
+We added the `, 1` after the table because we want our row proportions to add up to 1 (and the row variable is our first variable). For column proportions, change the 1 to a 2.
+
+Table 3: Column Proportions
+```{r}
+prop.table(table(gss$degree, gss$courts), 2)
+```
+
+If you do not include a 1 or 2, you will get cell proportions - the proportion of all observations in each cell. That is rarely helpful.
+
+```{r}
+prop.table(table(gss$degree, gss$courts))
+```
+
+What proportion of respondents in each age category have used instagram (the `instagrm` variable)?
+
+### REPLACE THIS LINE WITH YOUR CODE
+
+```{r}
+prop.table(table(gss$age_category, gss$instagrm),1)
+```
+
+Let's see how the age distribution in Instagram usage varies by sex. Once you are working with at least three variables, it is more efficient to use the `group_by` and `summarize` functions to calculate measures for specific combinations of categorical levels.
+
+```{r}
+instagram_sex_table <- gss %>%
+     group_by(age_category, sex) %>%
+     filter(age_category!="NA") %>% # Use filter to restrict observations
+     summarize(used_instagram = mean(instagrm=="Yes", na.rm=TRUE))
+
+instagram_sex_table
+```
+
+## From Tables To Figures
+
+
+### Column Plots
+
+The information in the table we just made might be better conveyed through a figure. We will use the `ggplot2` package for figures. The foundation for ggplot is to think of a figure as having multiple layers. The bottom layer is where we name the object, state the dataset we are using, and then give some aesthetic mapping information. In this example, we will use the data in the instagram_sex_table created above, will use the values in the age_category column for our x-axis, will use the values in the used_instagram column for our y-axis, and will want different colored columns for males and females (the two values of the sex variable).
+
+```{r}
+instagram_sex_plot <- ggplot(instagram_sex_table, aes(x = age_category,
+                                        y = used_instagram,
+                                        fill = sex))
+
+instagram_sex_plot
+```
+
+Once we set the background for our plot, we add another layer to it. We will have a separate column for each sex in every age category, and the height of the column will be the proportion in that sex/age combination who have reported using instagram. 
+
+```{r}
+instagram_sex_plot + geom_col(position = "dodge")
+```
+
+Changing "dodge" to "fill" in the chunk above will plot the proportion in each category who have used instagram who are female and male. That is not as useful for this analysis but could be helpful for other analyses.
+
+Clean up the dodged figure by adding new axis titles, adding a plot title and subtitle, removing the title for the legend (the key for the "fill" variables), moving the legend to the bottom of the figure, and adding text labels for each column showing the proportion of Instagram usage for that age/sex combination.
+
+```{r}
+instagram_sex_plot + geom_col(position = "dodge") +
+     labs(x = "Age",
+          y = "Proportion",
+          title = "Instagram Usage By Age",
+          subtitle = "2016 General Social Survey",
+          fill = "") +
+     theme(legend.position = "bottom") +
+     geom_text(aes(label = round(used_instagram,3)),
+               position = position_dodge(1),
+               vjust = 0)
+```
+
+### Historical Trend Lines
+
+The last figure we will make is a historical trend line showing racial differences in responses to the courts variable. We start by finding, for each year and race combination, the proportion with each response to the courts question.
+
+```{r}
+courts_data <- gss %>%
+     group_by(year, race) %>%
+     filter(age_category!="NA") %>%
+     summarize(prop_not_enough = 
+                    mean(courts == "Not harsh enough", na.rm=TRUE),
+               prop_about_right = 
+                    mean(courts == "About right", na.rm=TRUE),
+               prop_too_harsh = 
+                    mean(courts == "Too harsh", na.rm=TRUE))
+```
+
+Next we reshape the data so there is one row for each year/race/courts combination and all the proportions are in one column. We will also fix the order of the courts categories (with the `levels` option) and give them real names (with the `labels` option).
+
+```{r}
+courts_data <- courts_data %>%
+     gather(category, proportion, prop_not_enough:prop_too_harsh) %>%
+     mutate(category = factor(category,
+                              levels = c("prop_not_enough", 
+                                         "prop_about_right", 
+                                         "prop_too_harsh"),
+                              labels = c("Not harsh enough",
+                                         "About right",
+                                         "Too harsh")))
+```
+
+Now we are ready to build the plot. We need points and lines (rather than columns) this time, and we want the points and lines to be in different colors for each courts category. The `facet_grid` option will create a separate plot for each category of the race variable. We will also clean up the labels and legend again.
+
+```{r}
+courts_plot <- ggplot(courts_data, aes(x = year, y = proportion, 
+                                       color = category, group = category))
+
+courts_plot + geom_point() + geom_line() + facet_grid(.~race) +
+     labs(x = "Year",
+          y = "Proportion",
+          title = "Racial Differences in Opinions About Courts' Treatment of Criminals",
+          subtitle = "General Social Survey, 2000-2018",
+          color = "") +
+     theme(legend.position = "bottom")
+```

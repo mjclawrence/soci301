@@ -1,0 +1,182 @@
+---
+title: "GSS Workshop Cleanup"
+author: "ML"
+date: "4/24/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+gss <- read.csv("/Users/lawrence/Documents/GitHub/soci301/data_workshop/gss_cleanup.csv")
+```
+
+```{r}
+gss <- gss[,2:28]
+names(gss) <- tolower(names(gss))
+```
+
+```{r}
+gss <- gss %>%
+  mutate(sellbaby = ifelse(sellbaby == 0 | sellbaby>=8, NA, sellbaby),
+         sellbaby = factor(sellbaby,
+                           labels = c("Forbid It", "Permit It")))
+```
+
+```{r}
+gss <- gss %>%
+  mutate(usmixed = ifelse(usmixed < 0 | usmixed>=998, NA, usmixed))
+```
+
+```{r}
+gss <- gss %>%
+  mutate(sports30 = ifelse(sports30 == 0 | sports30>=8, NA, sports30),
+         sports30 = factor(sports30,
+                           labels = c("Never", "1-2 Times", "3-5 Times",
+                                      "More Than 5 Times")))
+```
+
+```{r}
+gss <- gss %>%
+  mutate(disabld1 = ifelse(disabld1 == 0 | disabld1>=8, NA, disabld1),
+         disabld2 = ifelse(disabld2 == 0 | disabld2>=8, NA, disabld2),
+         disabld3 = ifelse(disabld3 == 0 | disabld3>=8, NA, disabld3),
+         disabld4 = ifelse(disabld4 == 0 | disabld4>=8, NA, disabld4),
+         disabld5 = ifelse(disabld5 == 0 | disabld5>=8, NA, disabld5),
+         disabled = ifelse(disabld1 == 1 | disabld2 == 1 | disabld3 == 1 | disabld4 == 1 | disabld5 == 1, 1, 0),
+         disabled = factor(disabled,
+                           labels = c("No", "Yes")))
+```
+
+```{r}
+gss <- gss %>%
+  mutate(conschls = ifelse(conschls == 0 | conschls>=8, NA, conschls),
+         conschls = factor(conschls,
+                           levels = c(5, 4, 3, 2, 1),
+                           labels = c("No confidence at all",
+                                      "Very little confidence",
+                                      "Some confidence",
+                                      "A great deal of confidence",
+                                      "Complete confidence")))
+```
+
+```{r}
+gss <- gss %>%
+  mutate(polinter = ifelse(polinter == 0 | polinter >= 8, NA, polinter),
+         polinter = factor(polinter,
+                           levels = c(4, 3, 2, 1),
+                           labels = c("Have not done it and would never do it",
+                                      "Have not done it but might do it",
+                                      "Have done it in the more distant past",
+                                      "Have done it in the past year")))
+```
+
+```{r}
+gss <- gss %>%
+  mutate(pubsch = ifelse(pubsch == 0 | pubsch >= 8, NA, pubsch),
+         pubsch = factor(pubsch,
+                         levels = c(2, 1),
+                         labels = c("No", "Yes")))
+```
+
+```{r}
+gss <- gss %>%
+  mutate(memnum = ifelse(memnum == -1 | memnum >= 98, NA, memnum))
+```
+
+```{r}
+gss <- gss %>%
+  mutate(tvhours = ifelse(tvhours == -1 | tvhours >= 98, NA, tvhours))
+```
+
+```{r}
+gss <- gss %>%
+  mutate(age = ifelse(age >= 98, NA, age))
+```
+
+```{r}
+gss <- gss %>%
+  mutate(degree = ifelse(degree >=7, NA, degree),
+         degree = factor(degree,
+                         labels = c("Less than HS",
+                                    "High school diploma",
+                                    "Junior college",
+                                    "Bachelor Degree",
+                                    "Graduate Degree")))
+```
+
+```{r}
+gss <- gss %>%
+  mutate(sex = factor(sex,
+         labels = c("Male", "Female")))
+```
+
+```{r}
+gss <- gss %>%
+  mutate(race = ifelse(race == 0, NA, race),
+         race = factor(race,
+                       labels = c("White", "Black", "Other")))
+```
+
+```{r}
+gss <- gss %>%
+  rename(natdrug = natdrugy) %>%
+  mutate(natdrug = ifelse(natdrug == 0 | natdrug >= 8, NA, natdrug),
+         natdrug = factor(natdrug,
+                          labels = c("Too little", "About right", 
+                                     "Too much")))
+```
+
+```{r}
+gss <- gss %>%
+  mutate(health = ifelse(health == 0 | health >= 8, NA, health),
+         health = factor(health,
+                         levels = c(4, 3, 2, 1),
+                         labels = c("Poor", "Fair", "Good", "Excellent")))
+```
+
+```{r}
+gss <- gss %>%
+  mutate(conmedic = ifelse(conmedic == 0 | conmedic >= 8, NA, conmedic),
+         conmedic = factor(conmedic,
+                           levels = c(3, 2, 1),
+                           labels = c("Hardly any", "Only some",
+                                      "A great deal")))
+```
+
+```{r}
+gss <- gss %>%
+  rename(class = class_) %>%
+  mutate(class = ifelse(class == 0 | class >= 5, NA, class),
+         class = factor(class,
+                        labels = c("Lower class", "Working class",
+                                   "Middle class", "Upper class")))
+```
+
+```{r}
+gss <- gss %>%
+  mutate(abany = ifelse(abany == 0 | abany >= 8, NA, abany),
+         abany = factor(abany,
+                        levels = c(2, 1),
+                        labels = c("No", "Yes")))
+```
+
+```{r}
+gss <- gss %>%
+  select(-id_, -ballot, -(disabld1:disabld5))
+```
+
+```{r}
+write.csv(gss, "/Users/lawrence/Documents/GitHub/soci301/data_workshop/gss_clean.csv")
+```
+
+```{r}
+save(gss, file = "/Users/lawrence/Documents/GitHub/soci301/data_workshop/gss_clean.Rda")
+```
+
