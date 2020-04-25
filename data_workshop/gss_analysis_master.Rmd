@@ -26,70 +26,65 @@ How does R know what is code and what is regular text? In an R Notebook, code go
 Everything between those fences will be run as code (unless it is preceded by a hashtag) when you press the green arrow in the code block.
 
 We start by loading the data and packages. Note that you may need to install the packages.
+
 ```{r, error = FALSE, warning = FALSE, message = FALSE}
 
 library(tidyverse) 
 # This loads the tidyverse package
 
-gss <- read.csv("https://raw.githubusercontent.com/lawrence-midd/soan301/master/gss_analysis.csv") 
-# This loads the data and saves it as a data frame called `gss`
+datalink <- "https://raw.githubusercontent.com/mjclawrence/soci301/master/data_workshop/gss_clean.Rda"
+
+load(url(datalink))
+
+gss <- filter(gss, TRUE)
 ```
+
 
 For an overview of the types of variables we have in our dataset, look to the top right pane and click the blue button with the white arrow next to the data frame name. There are two types of variables in our dataset. The `Int` variables are *integer* variables which means they are numeric. The `Factor` variables are categorical variables; their *levels* are the categories.
 
 ## Variables
 
-What are the variables in this GSS subset (pulled from the 2000-2018 survey years)? Here are the variable names and labels. For further details about the wording of the questions, visit http://gssdataexplorer.norc.org
+What are the variables in this GSS subset (pulled from the 1996-2018 survey years)? Here are the variable names and labels. For further details about the wording of the questions, visit http://gssdataexplorer.norc.org
 
-`age` - Age of respondent
+`abany` = Abortion if woman wants for any reason
 
-`books16` -  Books in home of r age 16
+`age` = Age in years
 
-`born` - Was r born in this country
+`anyhispanic` = Self-identified ethnic origin includes Hispanic (created from `hispanic`)
 
-`chldidel` - Ideal number of children
+`class` = Subjective class identification
 
-`citizen` - Are you a citizen of America
+`conmedic` = Confidence in medical community
 
-`conpress` - Confidence in press
+`conschls` = Confidence in schools and education system
 
-`cooking1` - Who in household prepares the meals
+`degree` = Highest degree completed
 
-`courts` - Courts dealing with criminals
+`disabled` = Respondent has a disability (created from `disabld1` - `disabld5`)
 
-`degree` - Rs highest degree
+`health` = Self-reported health condition
 
-`hispanic` - Hispanic specified
+`memnum` = Number of memberships
 
-`humor30` -  R use humor site in past 30 days
+`natdrugy` = Are we spending too much, too little, or about the right amount on drug rehabilitation?
 
-`instagrm` - Are you a member of or regularly use Instagram
+`polinter` = Expressed political views on internet past year
 
-`maeduc` - Highest year school completed, mother
+`pubsch` = All children attend public elementary and high school
 
-`major1` - College major 1
+`race` = Big race categories (white, black, other)
 
-`natenvir` - Improving & protecting environment
+`sellbaby` = Surrogate mothers should be permitted
 
-`paeduc` - Highest year school completed, father
+`sex` = Respondent's sex
 
-`premars1` - Is premarital sex wrong?
+`sports30` = In the past 30 days, how often have you visited a web site for sports?
 
-`racdif1` -  Differences due to discrimination
+`tvhours` = Hours per day watching tv
 
-`racdif3` -  Differences due to lack of education
+`usmixed` = What percentage of population is of mixed heritage?
 
-`race` - Race of respondent
-
-`region` - Region of interview
-
-`relig16` -  Religion in which raised
-
-`sex` -  Respondent's sex
-
-`spnatdis` - Should govt spend more or less on natural disasters 
-
-`year` -     Gss year for this respondent
+`year` = Survey year
 
 
 ## Distributions of Single Variables

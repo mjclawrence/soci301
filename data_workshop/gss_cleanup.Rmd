@@ -169,7 +169,14 @@ gss <- gss %>%
 
 ```{r}
 gss <- gss %>%
-  select(-id_, -ballot, -(disabld1:disabld5))
+  mutate(anyhispanic = ifelse(hispanic == 0 | hispanic >= 98, NA,
+                              ifelse(hispanic == 1, "No", "Yes")))
+```
+
+
+```{r}
+gss <- gss %>%
+  select(-id_, -ballot, -(disabld1:disabld5), -educ, -hispanic)
 ```
 
 ```{r}
