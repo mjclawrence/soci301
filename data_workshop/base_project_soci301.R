@@ -4,5 +4,6 @@ required_packages <- c("tidyverse", "rtweet", "kableExtra", "lubridate", "ggthem
                        "markdown", "mime", "rmarkdown", "rprojroot",
                        "stringi", "stringr", "tinytex", "xfun", "yaml",
                        "plyr", "lutz", "suncalc", "splines")
+
 install.packages(required_packages)
 

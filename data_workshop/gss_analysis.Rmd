@@ -135,6 +135,7 @@ Try making a proportion table for the `health` variable, which includes response
 
 ### REPLACE THIS LINE WITH YOUR CODE
 
+
 There are a lot of decimal places in our proportion tables. We can use the `round()` function to simplify. Note the `,3` option tied to the parentheses closing the `round()` function. That 3 asserts we want the proportions rounded to 3 decimal places.
 
 ```{r}
